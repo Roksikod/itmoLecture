@@ -6,9 +6,14 @@ import com.example.itmo.model.dto.request.UserInfoRequest;
 import com.example.itmo.model.dto.response.UserInfoResponse;
 import com.example.itmo.model.enums.UserStatus;
 import com.example.itmo.service.UserService;
+import com.example.itmo.utils.PaginationUtil;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -38,7 +43,8 @@ public class UserServiceImpl implements UserService {
         return mapper.convertValue(getUserDb(id), UserInfoResponse.class);
     }
 
-    private User getUserDb(Long id) {
+    @Override
+    public User getUserDb(Long id) {
         return userRepo.findById(id).orElse(new User());
     }
 
@@ -76,10 +82,20 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public List<UserInfoResponse> getAllUsers() {
-        return userRepo.findAll()
+    public Page<UserInfoResponse> getAllUsers(Integer page, Integer perPage, String sort, Sort.Direction order) {
+        Pageable request = PaginationUtil.getPageRequest(page, perPage, sort, order);
+
+        List<UserInfoResponse> all = userRepo.findAll(request)
+                .getContent()
                 .stream()
                 .map(user -> mapper.convertValue(user, UserInfoResponse.class))
                 .collect(Collectors.toList());
+
+        return new PageImpl<>(all);
+    }
+
+    @Override
+    public User updateCarList(User user) {
+        return userRepo.save(user);
     }
 }
