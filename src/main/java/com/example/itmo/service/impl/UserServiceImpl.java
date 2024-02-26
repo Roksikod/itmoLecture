@@ -31,6 +31,7 @@ public class UserServiceImpl implements UserService {
     private final UserRepo userRepo;
     private final ObjectMapper mapper;
     public static final String ERR_MSG = "User not found";
+    public static final String API_KEY = "SGVsbG8gd29ybGQh";
 
     @Override
     public UserInfoResponse createUser(UserInfoRequest request) {
@@ -54,7 +55,10 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserInfoResponse getUser(Long id) {
+    public UserInfoResponse getUser(String apiKey, Long id) {
+        if (!apiKey.equals(API_KEY)) {
+            throw new CustomException("Invalid api-key", HttpStatus.UNAUTHORIZED);
+        }
         return mapper.convertValue(getUserDb(id), UserInfoResponse.class);
     }
 

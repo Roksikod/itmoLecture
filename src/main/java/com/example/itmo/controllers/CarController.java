@@ -3,14 +3,18 @@ package com.example.itmo.controllers;
 import com.example.itmo.model.dto.request.CarInfoRequest;
 import com.example.itmo.model.dto.response.CarInfoResponse;
 import com.example.itmo.service.CarService;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+import static org.springframework.http.HttpHeaders.AUTHORIZATION;
+
 @RestController
 @RequestMapping("/cars")
 @RequiredArgsConstructor
+@SecurityRequirement(name = AUTHORIZATION)
 public class CarController {
 
     private final CarService carService;

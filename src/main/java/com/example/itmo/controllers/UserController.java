@@ -26,8 +26,8 @@ public class UserController {
 
     @GetMapping("/{id}")
     @Operation(summary = "Получение пользователя")
-    public UserInfoResponse getUser(@PathVariable Long id) {
-        return userService.getUser(id);
+    public UserInfoResponse getUser(@RequestHeader("api-key") String apiKey, @PathVariable Long id) {
+        return userService.getUser(apiKey, id);
     }
 
     @PutMapping("/{id}")

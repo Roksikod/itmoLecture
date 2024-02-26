@@ -8,6 +8,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -61,8 +62,10 @@ public class GlobalException {
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ErrorMessage> handleMissingParams(MethodArgumentNotValidException ex) {
+        FieldError fieldError = ex.getFieldError();
+        String message = fieldError != null ? fieldError.getDefaultMessage() : ex.getMessage();
         return ResponseEntity.status(400)
-                .body(new ErrorMessage(ex.getMessage()));
+                .body(new ErrorMessage(message));
     }
 
 }

@@ -9,7 +9,7 @@ import org.springframework.data.domain.Sort;
 public interface UserService {
     UserInfoResponse createUser(UserInfoRequest request);
 
-    UserInfoResponse getUser(Long id);
+    UserInfoResponse getUser(String apiKey, Long id);
 
     User getUserDb(Long id);
 
