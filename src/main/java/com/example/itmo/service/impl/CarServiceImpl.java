@@ -9,9 +9,14 @@ import com.example.itmo.model.dto.response.UserInfoResponse;
 import com.example.itmo.model.enums.CarStatus;
 import com.example.itmo.service.CarService;
 import com.example.itmo.service.UserService;
+import com.example.itmo.utils.PaginationUtil;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -106,4 +111,16 @@ public class CarServiceImpl implements CarService {
         carInfoResponse.setUser(userInfoResponse);
         return carInfoResponse;
     }
+
+    @Override
+    public Page<CarInfoResponse> getUserCars(Long userId, Integer page, Integer perPage, String sort, Sort.Direction order) {
+        userService.getUserDb(userId);
+        Pageable request = PaginationUtil.getPageRequest(page, perPage, sort, order);
+        Page<Car> allByUserId = carRepo.findAllByUserId(request, userId);
+
+        return new PageImpl<>(allByUserId.stream()
+                .map(c -> mapper.convertValue(c, CarInfoResponse.class))
+                .collect(Collectors.toList()));
+    }
+
 }
