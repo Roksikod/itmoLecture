@@ -1,8 +1,8 @@
 spring:
   datasource:
     url: jdbc:postgresql://localhost:5432/itmo
-    username: postgres
-    password: postgres
+    username: ${PG_USERNAME:postgres}
+    password: ${PG_PASSWORD:postgres}
     driver-class-name: org.postgresql.Driver
 
   jpa:
@@ -17,3 +17,8 @@ spring:
         jdbc:
           lob:
             non_contextual_creation: true
+
+
+param:
+  env:
+    value: ${ENV_PARAM:123}

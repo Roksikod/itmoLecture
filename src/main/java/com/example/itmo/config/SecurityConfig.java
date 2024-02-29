@@ -93,9 +93,10 @@ public class SecurityConfig {
                     .authorizeRequests()
                     .antMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                     .antMatchers(HttpMethod.GET, "/users/**").permitAll()
+                    .antMatchers(HttpMethod.POST, "/users/**").permitAll()
                     .antMatchers("/api/login/**", "/api/token/refresh/**", "/api/register/**").permitAll()
                     .antMatchers(SWAGGER_ENDPOINT).permitAll()
-                    .antMatchers(POST, "/users/**").hasAnyAuthority("ROLE_ADMIN")
+//                    .antMatchers(POST, "/users/**").hasAnyAuthority("ROLE_ADMIN")
                     .anyRequest().authenticated();
         }
 

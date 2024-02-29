@@ -6,17 +6,20 @@ import com.example.itmo.model.db.repository.UserRepo;
 import com.example.itmo.model.dto.request.UserInfoRequest;
 import com.example.itmo.model.dto.response.UserInfoResponse;
 import com.example.itmo.model.enums.UserStatus;
+import com.example.itmo.remote.clients.RemoteClient;
 import com.example.itmo.service.UserService;
 import com.example.itmo.utils.PaginationUtil;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.validator.routines.EmailValidator;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -32,6 +35,10 @@ public class UserServiceImpl implements UserService {
     private final ObjectMapper mapper;
     public static final String ERR_MSG = "User not found";
     public static final String API_KEY = "SGVsbG8gd29ybGQh";
+    private final RemoteClient remoteClient;
+
+    @Value("${param.env.value}")
+    private Integer envValue;
 
     @Override
     public UserInfoResponse createUser(UserInfoRequest request) {
@@ -49,6 +56,7 @@ public class UserServiceImpl implements UserService {
         User user = mapper.convertValue(request, User.class);
         user.setStatus(UserStatus.CREATED);
         user.setCreatedAt(LocalDateTime.now());
+//        user.setAge(envValue); // example
         user = userRepo.save(user);
 
         return mapper.convertValue(user, UserInfoResponse.class);
@@ -108,5 +116,16 @@ public class UserServiceImpl implements UserService {
     @Override
     public User updateCarList(User user) {
         return userRepo.save(user);
+    }
+
+    public UserInfoResponse getYaUser(Long id) {
+        ResponseEntity<UserInfoResponse> response = remoteClient.getYaUser(id, API_KEY);
+        UserInfoResponse result = null;
+        if (response.getStatusCode().is2xxSuccessful()) {
+            result = response.getBody();
+        } else if (response.getStatusCode().is4xxClientError() || response.getStatusCode().is5xxServerError()) {
+            log.error("status code: {}, error body; {}", response.getStatusCodeValue(), response.getBody());
+        }
+        return result;
     }
 }
