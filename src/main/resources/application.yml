@@ -18,7 +18,25 @@ spring:
           lob:
             non_contextual_creation: true
 
+  kafka:
+    producer:
+      bootstrap-servers: localhost:9092
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.apache.kafka.common.serialization.StringSerializer
+      retries: 2
+    consumer:
+      client-id: itmo-server-client
+      group-id: group
+      enable-auto-commit: true
+      bootstrap-servers: localhost:9092
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+
 
 param:
   env:
     value: ${ENV_PARAM:123}
+
+kafka:
+  topics:
+    notification: itmo
